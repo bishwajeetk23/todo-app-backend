@@ -1,0 +1,39 @@
+name: Deploy backend
+on:
+  push:
+    branches: [master]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Docker login
+        uses: docker/login-action@v2
+        with: 
+          username: ${{ secrets.DOCKERHUB_USERNAME}}
+          password: ${{ secrets.DOCKERHUB_PASSWORD}}
+      
+      - name: Build and Push
+        uses: docker/build-push-avtion@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: dangerboyking/todo-app-backend:${{ github.sha }}
+      - name: Deploy to the VM
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ~/ssh_key
+          chmod 700 /home/runner/ssh_key
+          ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@44.205.249.225 -t "docker stop user_backend && docker run --name todo_backend -d -p 8000:8000 dangerboyking/todo-app-backend:${{ github.sha }}"
+
+
+# Steps for all the jobs
+# 1. select the branches
+# 2. do job to the ubuntu ubuntu-latest with action
+# 3. checkout the branch with action
+# 4. docker login with action
+# 5. docker setup with action
+# 6. build and pull image
+# 7. ssh in the VM and run the docker image on the VM and kill the previous image
