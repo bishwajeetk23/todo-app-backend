@@ -61,7 +61,7 @@ app.get('/todo_list', async(req,res)=>{
         }
     });
     res.status(200).json(todoList);
-    
+    console.log("todo_list_request");
 });
 app.listen(port,()=>{
     console.log(`Server is running on http://localhost:${port}`);
