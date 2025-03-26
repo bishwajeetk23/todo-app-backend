@@ -48,6 +48,8 @@ app.post('/add_todo',async(req,res)=>{
     res.status(200).json({
         message:"Todo added successfully"
     });
+    console.log("he");
+    
 });
 
 app.get('/todo_list', async(req,res)=>{
